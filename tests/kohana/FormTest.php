@@ -1,5 +1,4 @@
-<?php defined('SYSPATH') OR die('Kohana bootstrap needs to be included before tests run');
-
+<?php
 /**
  * Tests Kohana Form helper
  *
@@ -11,11 +10,11 @@
  * @category   Tests
  * @author     Kohana Team
  * @author     Jeremy Bush <contractfrombelow@gmail.com>
- * @copyright  (c) 2008-2012 Kohana Team
- * @license    http://kohanaframework.org/license
+ * @copyright  (c) Kohana Team
+ * @license    https://koseven.ga/LICENSE.md
  */
-class Kohana_FormTest extends Unittest_TestCase
-{
+class Kohana_FormTest extends Unittest_TestCase {
+
 	/**
 	 * Defaults for this test
 	 * @var array
@@ -35,24 +34,28 @@ class Kohana_FormTest extends Unittest_TestCase
 	 */
 	public function provider_open()
 	{
-		return array(
-			array(
-				  array('', NULL),
-				  array('action' => '')
-			),
-			array(
-				  array(NULL, NULL),
-				  array('action' => '')
-			),
-			array(
-				  array('foo', NULL),
-				  array('action' => '/foo')
-			),
-			array(
-				  array('foo', array('method' => 'get')),
-				  array('action' => '/foo', 'method' => 'get')
-			),
-		);
+		return [
+			[
+				  ['', NULL],
+				  ['action' => '']
+			],
+			[
+				  [NULL, NULL],
+				  ['action' => '']
+			],
+			[
+				  ['foo', NULL],
+				  ['action' => '/foo']
+			],
+			[
+				  ['foo', ['method' => 'get']],
+				  ['action' => '/foo', 'method' => 'get']
+			],
+			[
+				['//www.example.com/', NULL],
+				['action' => '//www.example.com/']
+			],
+		];
 	}
 
 	/**
@@ -69,14 +72,14 @@ class Kohana_FormTest extends Unittest_TestCase
 
 		$tag = Form::open($action, $attributes);
 
-		$matcher = array(
+		$matcher = [
 			'tag' => 'form',
 			// Default attributes
-			'attributes' => array(
-				'method'         => 'post',
+			'attributes' => [
+				'method' => 'post',
 				'accept-charset' => 'utf-8',
-			),
-		);
+			],
+		];
 
 		$matcher['attributes'] = $expected + $matcher['attributes'];
 
@@ -405,4 +408,5 @@ class Kohana_FormTest extends Unittest_TestCase
 	{
 		$this->assertSame($expected, Form::label($for, $text, $attributes));
 	}
+
 }

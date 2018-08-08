@@ -1,5 +1,4 @@
-<?php defined('SYSPATH') OR die('Kohana bootstrap needs to be included before tests run');
-
+<?php
 /**
  * Tests HTML
  *
@@ -11,11 +10,10 @@
  * @category   Tests
  * @author     Kohana Team
  * @author     BRMatt <matthew@sigswitch.com>
- * @copyright  (c) 2008-2012 Kohana Team
- * @license    http://kohanaframework.org/license
+ * @copyright  (c) Kohana Team
+ * @license    https://koseven.ga/LICENSE.md
  */
-class Kohana_HTMLTest extends Unittest_TestCase
-{
+class Kohana_HTMLTest extends Unittest_TestCase {
 
 	/**
 	 * Sets up the environment
@@ -274,6 +272,12 @@ class Kohana_HTMLTest extends Unittest_TestCase
 				array('target' => '_blank'),
 				'http',
 			),
+			[
+				'<a href="//google.com/">GOOGLE</a>',
+				[],
+				'//google.com/',
+				'GOOGLE',
+			],
 			array(
 				'<a href="https://www.kohanaframework.org/kohana/users/example">Kohana</a>',
 				array(),
@@ -401,4 +405,55 @@ class Kohana_HTMLTest extends Unittest_TestCase
 			HTML::file_anchor($file, $title, $attributes, $protocol, $index)
 		);
 	}
+
+
+	/**
+	 * Provides test data for test_image
+	 *
+	 * @return array Array of test data
+	 */
+	public function provider_image()
+	{
+		return [
+			[
+				'<img src="http://google.com/image.png" />',
+				'http://google.com/image.png',
+			],
+			[
+				'<img src="//google.com/image.png" />',
+				'//google.com/image.png',
+			],
+			[
+				'<img src="/kohana/img/image.png" />',
+				'img/image.png',
+			],
+			[
+				'<img src="https://www.kohanaframework.org/kohana/index.php/img/image.png" alt="..." />',
+				'img/image.png',
+				['alt' => '...',],
+				'https',
+				TRUE
+			],
+		];
+	}
+
+	/**
+	 * Tests HTML::image()
+	 *
+	 * @test
+	 * @dataProvider  provider_image
+	 * @param string  $expected       Expected output
+	 * @param string  $file           file name
+	 * @param array   $attributes     HTML attributes for the image
+	 * @param string  $protocol       Protocol to use
+	 * @param bool    $index          Should the index file be included in url?
+	 */
+	public function test_image($expected, $file, array $attributes = NULL, $protocol = NULL, $index = FALSE)
+	{
+		$this->assertSame(
+			$expected,
+			HTML::image($file, $attributes, $protocol, $index)
+		);
+	}
+
 }
