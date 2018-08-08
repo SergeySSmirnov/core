@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') OR die('No direct script access.');
+<?php
 /**
  * Form helper class. Unless otherwise noted, all generated HTML will be made
  * safe using the [HTML::chars] method. This prevents against simple XSS
@@ -8,8 +8,8 @@
  * @package    Kohana
  * @category   Helpers
  * @author     Kohana Team
- * @copyright  (c) 2007-2012 Kohana Team
- * @license    http://kohanaframework.org/license
+ * @copyright  (c) Kohana Team
+ * @license    https://koseven.ga/LICENSE.md
  */
 class Kohana_Form {
 
@@ -45,7 +45,7 @@ class Kohana_Form {
 			// Allow empty form actions (submits back to the current url).
 			$action = '';
 		}
-		elseif (strpos($action, '://') === FALSE)
+		elseif (strpos($action, '://') === FALSE AND strncmp($action, '//', 2))
 		{
 			// Make the URI absolute
 			$action = URL::site($action);
@@ -374,7 +374,7 @@ class Kohana_Form {
 	{
 		if ( ! empty($attributes['src']))
 		{
-			if (strpos($attributes['src'], '://') === FALSE)
+			if (strpos($attributes['src'], '://') === FALSE AND strncmp($attributes['src'], '//', 2))
 			{
 				// Add the base URL
 				$attributes['src'] = URL::base($index).$attributes['src'];
