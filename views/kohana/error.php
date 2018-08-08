@@ -1,5 +1,13 @@
-<?php defined('SYSPATH') OR die('No direct script access.') ?>
 <?php
+//when exceptions where thrown we where getting a ErrorException [ Fatal Error ]: Call to undefined function __()
+//since i18n was not loaded yet. nasty but works...
+if (!function_exists('__'))
+{
+    function __($message,$variables = NULL)
+    {
+	return is_array($variables) ? strtr($message, $variables):$message;
+    }
+}
 
 // Unique error identifier
 $error_id = uniqid('error');
