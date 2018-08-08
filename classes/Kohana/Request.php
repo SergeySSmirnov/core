@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') OR die('No direct script access.');
+<?php
 /**
  * Request. Uses the [Route] class to determine what
  * [Controller] to send the request to.
@@ -6,8 +6,8 @@
  * @package    Kohana
  * @category   Base
  * @author     Kohana Team
- * @copyright  (c) 2008-2012 Kohana Team
- * @license    http://kohanaframework.org/license
+ * @copyright  (c) Kohana Team
+ * @license    https://koseven.ga/LICENSE.md
  */
 class Kohana_Request implements HTTP_Request {
 
@@ -675,7 +675,7 @@ class Kohana_Request implements HTTP_Request {
 		// Detect protocol (if present)
 		// $allow_external = FALSE prevents the default index.php from
 		// being able to proxy external pages.
-		if ( ! $allow_external OR strpos($uri, '://') === FALSE)
+		if ( ! $allow_external OR (strpos($uri, '://') === FALSE AND strncmp($uri, '//', 2)))
 		{
 			// Remove leading and trailing slashes from the URI
 			$this->_uri = trim($uri, '/');
