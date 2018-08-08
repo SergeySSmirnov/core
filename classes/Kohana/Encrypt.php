@@ -1,4 +1,5 @@
-<?php defined('SYSPATH') OR die('No direct script access.');
+<?php
+
 /**
  * The Encrypt library provides two-way encryption of text and binary strings
  * using the [Mcrypt](http://php.net/mcrypt) extension, which consists of three
@@ -62,7 +63,7 @@ class Kohana_Encrypt {
 	 * @var int the size of the Initialization Vector (IV) in bytes
 	 */
 	protected $_iv_size;
-	
+
 	/**
 	 * Returns a singleton instance of Encrypt. An encryption key must be
 	 * provided in your "encrypt" configuration file.

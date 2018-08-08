@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Contains the most low-level helpers methods in Kohana:
  *
@@ -10,6 +11,7 @@
  * @package    Kohana
  * @category   HTTP
  * @author     Kohana Team
+ * @author     Sergey S. Smirnov
  * @since      3.1.0
  * @copyright  (c) Kohana Team
  * @license    https://koseven.ga/LICENSE.md
@@ -219,6 +221,34 @@ abstract class Kohana_HTTP {
 		}
 
 		return implode('&', $encoded);
+	}
+
+	/**
+	 * Check is bot or not.
+	 * @return bool
+	 */
+	public static function isBot() : bool {
+		if (!isset($_SERVER['HTTP_USER_AGENT']))
+			return true;
+		$_userAgent = strtolower($_SERVER['HTTP_USER_AGENT']);
+		foreach(Kohana::$config->load('http.bots') as $_rec)
+			if(strpos($_userAgent, $_rec) !== false)
+				return true;
+		return false;
+	}
+
+	/**
+	 * Query executed from mobile device or not.
+	 * @return boolean
+	 */
+	public static function isMobileClient() : bool {
+		if (!isset($_SERVER['HTTP_USER_AGENT']))
+			return false;
+		$_userAgent = strtolower($_SERVER['HTTP_USER_AGENT']);
+		foreach (Kohana::$config->loadOnce('http.mobile_clients') as $_rec)
+			if (strpos($_userAgent, $_rec) !== false)
+				return true;
+		return false;
 	}
 
 }

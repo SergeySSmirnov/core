@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Message logging with observer-based log writing.
  *
@@ -7,6 +8,7 @@
  * @package    Kohana
  * @category   Logging
  * @author     Kohana Team
+ * @author     Sergey S. Smirnov
  * @copyright  (c) Kohana Team
  * @license    https://koseven.ga/LICENSE.md
  */
@@ -51,6 +53,39 @@ class Kohana_Log {
 		}
 
 		return Log::$_instance;
+	}
+
+	/**
+	 * Immediately write string into log.
+	 * @param int $logLvlType Error type (one of constants Log::*).
+	 * @param string $mess Error message.
+	 * @param string $content Content to write into log.
+	 */
+	public static function logMess(int $logLvlType, string $mess, string $content = '') {
+		Log::instance()->add($logLvlType, $mess.(empty($content) ? '' : "\r\n\t{$content}"), null, array('no_back_trace'=>true, 'addNewPreStr'=>true))->write();
+	}
+
+	/**
+	 * Immediately write current query into log.
+	 * @param int $logLvlType Error type (one of constants Log::*).
+	 * @param string $mess Error message.
+	 */
+	public static function logQuery(int $logLvlType, string $mess = '') {
+		Log::instance()->add($logLvlType, ":message (IP: :ip)\r\n\t:query", array(':ip'=>Request::$client_ip, ':message'=>$mess, ':query'=>str_replace("\r\n", "\r\n\t", Request::$current->render())), array('no_back_trace'=>true, 'addNewPreStr'=>true))->write();
+	}
+
+	/**
+	 * Immediately write information about error into log.
+	 * @param Throwable $exc Object of error.
+	 * @param int $logLvlType Error type (one of constants Log::*).
+	 * @param string $mess Error message.
+	 */
+	public static function logError(Throwable $exc, int $logLvlType, string $mess = '') {
+		$error = sprintf('%s [ %s ]: %s ~ %s [ %d ]', get_class($exc), $exc->getCode(), strip_tags($exc->getMessage()), Debug::path($exc->getFile()), $exc->getLine());
+		Log::instance()
+				->add($logLvlType, "An error occurred while executing the request from: ip >>> :message\r\n\t:query", array(':ip'=>Request::$client_ip, ':message'=>(empty($mess) ? $exc->getMessage() : $mess), ':query'=>str_replace("\r\n", "\r\n\t", Request::$current->render())), array('no_back_trace'=>true, 'addNewPreStr'=>true))
+				->add($logLvlType, $error, null, array('exception'=>$exc))
+				->write();
 	}
 
 	/**

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Internationalization (i18n) class. Provides language loading and translation
  * methods without dependencies on [gettext](http://php.net/gettext).
@@ -15,6 +16,7 @@
  * @package    Kohana
  * @category   Base
  * @author     Kohana Team
+ * @author     Sergey S. Smirnov
  * @copyright  (c) Kohana Team
  * @license    https://koseven.ga/LICENSE.md
  */
@@ -29,6 +31,17 @@ class Kohana_I18n {
 	 * @var  string  source language: en-us, es-es, zh-cn, etc
 	 */
 	public static $source = 'en-us';
+
+	/**
+	 * @var array List of languages ​​from right to left.
+	 */
+	public static $_BDO_LANGS = [];
+
+	/**
+	 * @var array List of translations available in the system.
+	 */
+	public static $_accessibleLangTranslates = [];
+
 
 	/**
 	 * @var  array  cache of loaded languages
@@ -134,10 +147,39 @@ class Kohana_I18n {
 		return I18n::$_cache[$lang] = $table;
 	}
 
+	/**
+	 * Return array of available translations.
+	 * @return string[]
+	 */
+	static public function getAccessibleLangTranslates() {
+		if (empty(self::$_accessibleLangTranslates))
+			foreach (Kohana::list_files('i18n') as $_fInfo)
+				self::$_accessibleLangTranslates[] = pathinfo($_fInfo, PATHINFO_FILENAME);
+		return self::$_accessibleLangTranslates;
+	}
+
+	/**
+	 * Returns the direction of writing the text, depending on the current language of the system.
+	 * @return string
+	 */
+	static public function getBdo() : string {
+		return (in_array(self::lang(), self::$_BDO_LANGS)) ? 'rtl' : 'ltr';
+	}
+
+	/**
+	 * Check translate is exist or not.
+	 * @param string $lang
+	 * @return bool
+	 */
+	static public function translateIsExsist(string $lang) : bool {
+		if (empty(self::$_accessibleLangTranslates))
+			self::getAccessibleLangTranslates();
+		return in_array($lang, self::$_accessibleLangTranslates);
+	}
+
 }
 
-if ( ! function_exists('__'))
-{
+if ( ! function_exists('__')) {
 	/**
 	 * Kohana translation/internationalization function. The PHP function
 	 * [strtr](http://php.net/strtr) is used for replacing parameters.
@@ -152,15 +194,33 @@ if ( ! function_exists('__'))
 	 * @param   string  $lang   source language
 	 * @return  string
 	 */
-	function __($string, array $values = NULL, $lang = 'en-us')
-	{
+	function __($string, array $values = NULL, $lang = 'en-us') {
 		if ($lang !== I18n::$lang)
-		{
-			// The message and target languages are different
-			// Get the translation for this message
-			$string = I18n::get($string);
-		}
-
+			$string = I18n::get($string); // The message and target languages are different. Get the translation for this message
 		return empty($values) ? $string : strtr($string, $values);
 	}
+}
+
+if ( ! function_exists('___')) {
+	/**
+	 * Equivalent __() with echo.
+	 *
+	 * Kohana translation/internationalization function. The PHP function
+	 * [strtr](http://php.net/strtr) is used for replacing parameters.
+	 *
+	 *	___('Welcome back, :user', array(':user' => $username));
+	 *
+	 * [!!] The target language is defined by [I18n::$lang].
+	 *
+	 * @uses	I18n::get
+	 * @param   string  $string text to translate
+	 * @param   array   $values values to replace in the translated text
+	 * @param   string  $lang   source language
+	 */
+	function ___($string, array $values = NULL, $lang = 'en-us') {
+		if ($lang !== I18n::$lang)
+			$string = I18n::get($string); // The message and target languages are different. Get the translation for this message
+		echo empty($values) ? $string : strtr($string, $values);
+	}
+
 }

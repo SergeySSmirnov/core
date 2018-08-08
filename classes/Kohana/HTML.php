@@ -1,4 +1,5 @@
 <?php
+
 /**
  * HTML helper class. Provides generic methods for generating various HTML
  * tags and making output HTML safe.
@@ -6,6 +7,7 @@
  * @package    Kohana
  * @category   Helpers
  * @author     Kohana Team
+ * @author     Sergey S. Smirnov
  * @copyright  (c) Kohana Team
  * @license    https://koseven.ga/LICENSE.md
  */
@@ -237,20 +239,10 @@ class Kohana_HTML {
 	 * @uses    URL::base
 	 * @uses    HTML::attributes
 	 */
-	public static function script($file, array $attributes = NULL, $protocol = NULL, $index = FALSE)
-	{
-		if (strpos($file, '://') === FALSE AND strncmp($file, '//', 2))
-		{
-			// Add the base URL
+	public static function script($file, array $attributes = null, $protocol = null, $index = false) {
+		if (strpos($file, '://') === false AND strpos($file, '//') !== 0)
 			$file = URL::site($file, $protocol, $index);
-		}
-
-		// Set the script link
 		$attributes['src'] = $file;
-
-		// Set the script type
-		$attributes['type'] = 'text/javascript';
-
 		return '<script'.HTML::attributes($attributes).'></script>';
 	}
 

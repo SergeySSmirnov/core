@@ -1,10 +1,12 @@
 <?php
+
 /**
  * Validation rules.
  *
  * @package    Kohana
  * @category   Security
  * @author     Kohana Team
+ * @author     Sergey S. Smirnov
  * @copyright  (c) Kohana Team
  * @license    https://koseven.ga/LICENSE.md
  */
@@ -546,6 +548,26 @@ class Kohana_Valid {
 	public static function matches($array, $field, $match)
 	{
 		return ($array[$field] === $array[$match]);
+	}
+
+	/**
+	 * Verifies the validity of the specified value as a time in a 24-hour format.
+	 * @param string $ value The string to check.
+	 * @return bool
+	 */
+	public static function time(string $value) : bool {
+		return (bool)preg_match('/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/', $value);
+	}
+
+	/**
+	 * Verifies the validity of the specified value as a telephone number with the specified code and a certain length.
+	 * @param string $ value The value to check.
+	 * @param int $ code Country code.
+	 * @param int $ length The total length of the phone number.
+	 * @return bool
+	 */
+	public static function phoneNumber(string $value, int $code, int $length) : bool {
+		return (bool)preg_match('/^\+'.$code.'[0-9]{'.($length - strlen($code) - 1).'}$/', $value);
 	}
 
 }

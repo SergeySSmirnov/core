@@ -1,10 +1,12 @@
 <?php
+
 /**
  * Text helper class. Provides simple methods for working with text.
  *
  * @package    Kohana
  * @category   Helpers
  * @author     Kohana Team
+ * @author     Sergey S. Smirnov
  * @copyright  (c) Kohana Team
  * @license    https://koseven.ga/LICENSE.md
  */
@@ -599,7 +601,7 @@ class Kohana_Text {
 	 */
 	public static function widont($str)
 	{
-		// use '%' as delimiter and 'x' as modifier 
+		// use '%' as delimiter and 'x' as modifier
  		$widont_regex = "%
 			((?:</?(?:a|em|span|strong|i|b)[^>]*>)|[^<>\s]) # must be proceeded by an approved inline opening or closing tag or a nontag/nonspace
 			\s+                                             # the space to replace
@@ -690,6 +692,146 @@ class Kohana_Text {
 
 		// The value requested could not be found
 		return FALSE;
+	}
+
+	/**
+	 * Returns NULL if the string is not specified, otherwise it returns the string itself without leading and trailing whitespace.
+	 * @param string $value The string to check.
+	 * @return string|null
+	 */
+	public static function checkNullOrTrim($value) {
+		return empty($value) ? NULL : (is_string($value) ? trim($value) : $value);
+	}
+
+	/**
+	 * The function makes the first letter is upper of the line.
+	 * @param string $value The string to edit.
+	 * @param string $encoding The string encoding.
+	 * @return string
+	 */
+	public static function upperFirst($value, $encoding = 'utf8') {
+		return mb_strtoupper(mb_substr($value, 0, 1, $encoding), $encoding) . mb_substr($value, 1, mb_strlen($value), $encoding);
+	}
+
+	/**
+	 * Returns the value of the string if it is specified, otherwise it returns the default value.
+	 * @param string $value The value to check.
+	 * @param string $default The value to return if the value to be tested is not specified.
+	 * @return string
+	 */
+	public static function getVal(&$value, $default = NULL) {
+		return isset($value) ? $value : $default;
+	}
+
+	/**
+	 * Returns the string begins with the specified character.
+	 * @param string $haystack The string to check.
+	 * @param string $needle The character whose presence is to be checked.
+	 * @return boolean
+	 */
+	public static function startsWithChar(string $haystack, string $needle) : bool {
+		return (strlen($haystack) > 0) && ($haystack[0] == $needle);
+	}
+
+	/**
+	 * Returns that the string begins with the specified substring.
+	 * @param string $haystack The string to check.
+	 * @param string $needle The desired substring.
+	 * @return boolean
+	 */
+	public static function startsWith($haystack, $needle) {
+		return $needle === "" || strrpos($haystack, $needle, -strlen($haystack)) !== FALSE;
+	}
+
+	/**
+	 * Returns that the string ends with the specified substring.
+	 * @param string $haystack The string to check.
+	 * @param string $needle The desired substring.
+	 * @return boolean
+	 */
+	public static function endsWith($haystack, $needle) {
+		return $needle === "" || (($temp = strlen($haystack) - strlen($needle)) >= 0 && strpos($haystack, $needle, $temp) !== FALSE);
+	}
+
+	/**
+	 * Returns the string in which all characters are deleted except for numbers.
+	 * @param string $value The string to be cleared.
+	 * @return string
+	 */
+	public static function clearExceptDigits($value) {
+		return preg_replace('/[^0-9,]/', '', $value);
+	}
+
+	/**
+	 * Returns the string in which all the characters except for numbers and commas are deleted.
+	 * @param string $value The string to be cleared.
+	 * @return string
+	 */
+	public static function clearExceptDigitsAndCommas($value) {
+		return preg_replace('/[^0-9]/', '', $value);
+	}
+
+	/**
+	 * Returns the string in which all characters are deleted except for letters and numbers.
+	 * @param string $ value The string to be cleared.
+	 * @return string
+	 */
+	public static function clearExceptCharsAndDigits($value) {
+		return preg_replace('![^\w\d]*!', '', $value);
+	}
+
+	/**
+	 * Returns the string in which all characters are deleted except for the letters a-z or A-Z, numbers and underscores.
+	 * @param string $ value The string to be cleared.
+	 * @return string
+	 */
+	public static function clearExceptEngCharsDigitsAndUnd($value) {
+		return preg_replace('![^0-9a-zA-Z_]*!', '', $value);
+	}
+
+	/**
+	 * Returns the string in which all characters are deleted except for letters, numbers and spaces.
+	 * @param string $ value The string to be cleared.
+	 * @return string
+	 */
+	public static function clearExceptCharsDigitsSpace($value) {
+		return preg_replace('![^\w\d\s]*!', '', $value);
+	}
+
+	/**
+	 * Формирует склонение текста после числа.
+	 * @param string|int $number Число, которое будет отображено.
+	 * @param array $after Варианты написания для количества 1, 2 и 5.
+	 * @return string
+	 */
+	public static function pluralNumber($number, $after) : string {
+		$_cases = array (2, 0, 1, 1, 1, 2);
+		return $number.$after[($number%100>4 && $number%100<20)? 2: $_cases[min($number%10, 5)]];
+	}
+
+	/**
+	 * Формирует склонение текста после числа и возвращает его (число не возвращается).
+	 * @param string|int $number Число, которое будет отображено.
+	 * @param array $after Варианты написания для количества 1, 2 и 5.
+	 * @return string
+	 */
+	public static function pluralNumberText($number, $after) : string {
+		$_cases = array (2, 0, 1, 1, 1, 2);
+		return $after[($number%100>4 && $number%100<20)? 2: $_cases[min($number%10, 5)]];
+	}
+
+	/**
+	 * Converts a value to a string from an asterisk.
+	 * @param int $ rating The rating to convert to a string of asterisks.
+	 * @return string
+	 */
+	public static function getRatingAsStar($rating) : string {
+		$_ratingMess = '';
+		for ($_i = 0; $_i < $rating; $_i++)
+			$_ratingMess .= hex2bin('e2ad90');
+		if ($rating % 10 > 7)
+			$_ratingMess .= hex2bin('e2ad90');
+		return $_ratingMess;
 	}
 
 }

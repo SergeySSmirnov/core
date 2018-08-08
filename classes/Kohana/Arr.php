@@ -1,10 +1,12 @@
 <?php
+
 /**
  * Array helper.
  *
  * @package    Kohana
  * @category   Helpers
  * @author     Kohana Team
+ * @author     Sergey S. Smirnov
  * @copyright  (c) Kohana Team
  * @license    https://koseven.ga/LICENSE.md
  */
@@ -626,6 +628,24 @@ class Kohana_Arr {
 			}
 		}
 		return $flat;
+	}
+
+	/**
+	 * Return clone of array into new array. Array can include different types of data (arrays and objects).
+	 * @param mixed $array
+	 * @return array
+	 */
+	public static function clone($array) {
+		$_result = [];
+		foreach ($array as $_key => $_val) {
+			if (is_array($_val))
+				$_result[$_key] = self::clone($_val);
+				else if (is_object($_val))
+					$_result[$_key] = clone $_val;
+					else
+						$_result[$_key] = $_val;
+		}
+		return is_object($array) ? (object)$_result : $_result;
 	}
 
 }

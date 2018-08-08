@@ -1,10 +1,12 @@
 <?php
+
 /**
  * Contains debugging and dumping tools.
  *
  * @package    Kohana
  * @category   Base
  * @author     Kohana Team
+ * @author     Sergey S. Smirnov
  * @copyright  (c) Kohana Team
  * @license    https://koseven.ga/LICENSE.md
  */
@@ -460,6 +462,17 @@ class Kohana_Debug {
 		}
 
 		return $output;
+	}
+
+	/**
+	 * Outputs the contents of the passed variable or passed variables to the standard stream.
+	 */
+	public static function print() {
+
+		if (func_num_args() === 0)
+			return;
+			$_variables = func_get_args();
+			echo self::vars(...$_variables);
 	}
 
 }

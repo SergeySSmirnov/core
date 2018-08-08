@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Wrapper for configuration arrays. Multiple configuration readers can be
  * attached to allow loading configuration from files, database, etc.
@@ -12,6 +13,7 @@
  * @package    Kohana
  * @category   Configuration
  * @author     Kohana Team
+ * @author     Sergey S. Smirnov
  * @copyright  (c) Kohana Team
  * @license    https://koseven.ga/LICENSE.md
  */
@@ -142,6 +144,17 @@ class Kohana_Config {
 		}
 
 		return $this->_groups[$group];
+	}
+
+	/**
+	 * Load config data once and remove them from main config cache.
+	 * @param string $group
+	 * @return Kohana_Config_Group
+	 */
+	public function loadOnce($group) {
+		$_result = $this->load($group);
+		unset($this->_groups[$group]);
+		return $_result;
 	}
 
 	/**
