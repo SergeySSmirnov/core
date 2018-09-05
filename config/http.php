@@ -7,6 +7,7 @@ return [
 		'rambler',
 		'googlebot',
 		'bing.com',
+		'webvisor',
 		'dotnetdotcom',
 		'libwww-perl',
 		'python-urllib',
