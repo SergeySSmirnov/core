@@ -93,6 +93,8 @@ class Kohana_Encrypt {
 					array(':group' => $name));
 			}
 
+			error_reporting(error_reporting() ^ E_DEPRECATED);
+
 			if ( ! isset($config['mode']))
 			{
 				// Add the default mode
