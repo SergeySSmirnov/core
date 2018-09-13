@@ -559,6 +559,8 @@ class Kohana_Arr {
 		// Overloaded as parts are found
 		$command = $params = NULL;
 
+		$match = null;
+
 		// command[param,param]
 		if (preg_match('/^([^\(]*+)\((.*)\)$/', $str, $match))
 		{
@@ -646,6 +648,65 @@ class Kohana_Arr {
 						$_result[$_key] = $_val;
 		}
 		return is_object($array) ? (object)$_result : $_result;
+	}
+
+
+// TODO: Выполнить перевод документации на английский язык.
+
+
+	/**
+	 * Сортирует одномерный массив с учётом иерархии объектов в соответствии с их идентификаторами и идентификаторами родительских элементов.
+	 * @param array $arr Сортируемый массив должен быть вида: array({ИД}=>array($pidName=>{ИД родителя}, $fieldName=>{Отображаемое значение}), ...)
+	 * @param string $pidName Название ключа, содержащего идентификатор родителя.
+	 * @param string $fieldName Название ключа, содержащего значение.
+	 * @param bool $appendZero Признак необходимости добавить нулевой элемент с текстом " - ".
+	 * @param int $id Идентификатор родительского элемента, для которого необходимо найти дочерние записи.
+	 * @return array
+	 */
+	public static function hierarchyList($arr, string $pidName = 'pid', string $fieldName = 'val', bool $appendZero = TRUE, int $id = NULL) {
+		$_tArr = array(); // Временный массив, в который будем собирать элементы
+		if($appendZero)
+			$_tArr[0] = ' - ';
+		foreach($arr as $_key=>$_rec) {
+			if($_rec[$pidName] != $id) // Если текущий элемент не принадлежит родителю
+				continue;
+			$_tArr[$_key] = $_rec[$fieldName];
+			foreach(Arr::hierarchyList($arr, $pidName, $fieldName, FALSE, $_key) as $_subKey=>$_subRec) // Формируем субданные и пробегаемся по ним
+				$_tArr[$_subKey] = ((trim($_subRec) != '-') ? '- ' : '') . $_subRec;
+		}
+		return $_tArr;
+	}
+
+	/**
+	 * Осуществляет распаковку упакованных методом сбора данных формы (с помощью prepareSaveData).
+	 * @param mixed $data Данные, которые необходимо распаковать.
+	 * @return array Распакованные данные.
+	 */
+	public static function unpackData($data) {
+		if (!is_array($data)) // Если данные не представлены массивом, то возвращаем в первоначальном виде
+			return $data;
+		$_result = array();
+		$_tmp = null;
+		foreach($data as $_key=>$_val) {
+			$_tmp = (is_string($_val)) ? json_decode($_val, TRUE) : $_val;
+			$_result[$_key] = (json_last_error() === JSON_ERROR_NONE) ? $_tmp : $_val;
+		}
+		return $_result;
+	}
+
+	/**
+	 * Производит простое слияние двух массивов в один с сохренением ключей.
+	 * @param array $arr1
+	 * @param array $arr2
+	 * @return array
+	 */
+	public static function simpleMerge($arr1, $arr2) {
+		$_arr = array();
+		foreach ($arr1 as $_key => $_val)
+			$_arr[$_key] = $_val;
+		foreach ($arr2 as $_key => $_val)
+			$_arr[$_key] = $_val;
+		return $_arr;
 	}
 
 }

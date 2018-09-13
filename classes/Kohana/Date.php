@@ -26,7 +26,7 @@ class Kohana_Date {
 	 * Default timestamp format for formatted_time
 	 * @var  string
 	 */
-	public static $timestamp_format = 'Y-m-d H:i:s';
+	public static $timestamp_format = 'd.m.Y H:i:s';
 
 	/**
 	 * Timezone for formatted_time
@@ -598,6 +598,120 @@ class Kohana_Date {
 		$time->setTimeZone($tz);
 
 		return $time->format($timestamp_format);
+	}
+
+
+// TODO: Выполнить перевод документации на английский язык.
+
+
+	/**
+	 * Возвращает привычное представление даты в соответствии с заданным форматом.
+	 * @param string $date Дата, которую необходимо представить в текстовом виде. Допустимо использовать значение 'now'.
+	 * @param string $format Формат представления даты. Значение по умолчанию: 'd.m.Y'.
+	 * @param string $default Значение по умолчанию, которое будет возвращено в том случае, если значение даты отсутствует или равно NULL. Допустимо использовать значение 'now'.
+	 * @return string
+	 */
+	public static function asNorm($date = NULL, $format = NULL, $default = NULL) {
+		if (empty($date) && empty($default))
+			return '';
+		$date = empty($date) ? $default : $date;
+		return self::formatted_time($date, (empty($format) ? 'd.m.Y' : $format));
+	}
+
+	/**
+	 * Возвращает привычное представление даты и времени в соответствии с заданным форматом.
+	 * @param string $date Дата и время, которые необходимо представить в текстовом виде. Допустимо использовать значение 'now'.
+	 * @param string $format Формат представления даты и времени. Значение по умолчанию: 'd.m.Y H:i:s'.
+	 * @param string $default Значение по умолчанию, которое будет возвращено в том случае, если значение даты и времени отсутствует или равно NULL. Допустимо использовать значение 'now'.
+	 * @return string
+	 */
+	public static function asNormDateTime($date = NULL, $format = NULL, $default = NULL) {
+		if (empty($date) && empty($default))
+			return '';
+		$date = empty($date) ? $default : $date;
+		return self::formatted_time($date, (empty($format) ? 'd.m.Y H:i:s' : $format));
+	}
+
+	/**
+	 * Возвращает привычное представление даты в соответствии с заданным форматом. Если значение не задано, то вернёт NULL.
+	 * @param string $date Дата, которую необходимо представить в текстовом виде. Допустимо использовать значение 'now'.
+	 * @param string $format Формат представления даты. Значение по умолчанию: 'd.m.Y'.
+	 * @return string
+	 */
+	public static function asNormOrNull($date = NULL, $format = NULL) {
+		return empty($date) ? NULL : self::formatted_time($date, (empty($format) ? 'd.m.Y' : $format));
+	}
+
+	/**
+	 * Возвращает представление даты для использования в запросах к БД в соответствии с заданным форматом.
+	 * @param string $date Дата, которую необходимо представить в текстовом виде. Допустимо использовать значение 'now'.
+	 * @param string $format Формат представления даты. Значение по умолчанию: 'Y-m-d'.
+	 * @param string $default Значение по умолчанию, которое будет возвращено в том случае, если значение даты отсутствует или равно NULL. Допустимо использовать значение 'now'.
+	 * @return string
+	 */
+	public static function asDB($date = NULL, $format = NULL, $default = NULL) {
+		$date = empty($date) ? $default : $date;
+		return self::formatted_time($date, (empty($format) ? 'Y-m-d' : $format));
+	}
+
+	/**
+	 * Возвращает представление даты для использования в запросах к БД в соответствии с заданным форматом. Если значение не задано, то вернёт NULL.
+	 * @param string $date Дата, которую необходимо представить в текстовом виде. Допустимо использовать значение 'now'.
+	 * @param string $format Формат представления даты. Значение по умолчанию: 'Y-m-d'.
+	 * @return string
+	 */
+	public static function asDBorNULL($date = NULL, $format = NULL) {
+		return empty($date) ? NULL : self::formatted_time($date, (empty($format) ? 'Y-m-d' : $format));
+	}
+
+	/**
+	 * Возвращает представление даты и времени для использования в запросах к БД в соответствии с заданным форматом.
+	 * @param string $date Дата, которую необходимо представить в текстовом виде. Допустимо использовать значение 'now'.
+	 * @param string $format Формат представления даты. Значение по умолчанию: 'Y-m-d H:i:s'.
+	 * @param string $default Значение по умолчанию, которое будет возвращено в том случае, если значение даты отсутствует или равно NULL. Допустимо использовать значение 'now'.
+	 * @return string
+	 */
+	public static function asDBtime($date = NULL, $format = NULL, $default = NULL) {
+		$date = empty($date) ? $default : $date;
+		return self::formatted_time($date, (empty($format) ? 'Y-m-d H:i:s' : $format));
+	}
+
+	/**
+	 * Возвращает представление даты и времени для использования в запросах к БД в соответствии с заданным форматом. Если значение не задано, то вернёт NULL.
+	 * @param string $date Дата, которую необходимо представить в текстовом виде. Допустимо использовать значение 'now'.
+	 * @param string $format Формат представления даты. Значение по умолчанию: 'Y-m-d H:i:s'.
+	 * @return string
+	 */
+	public static function asDBtimeOrNULL($date = NULL, $format = NULL) {
+		return empty($date) ? NULL : self::formatted_time($date, (empty($format) ? 'Y-m-d H:i:s' : $format));
+	}
+
+	/**
+	 * Определяет, является ли указанный день субботой или воскресеньем.
+	 * @param string $date Дата, которую необходимо проверить.
+	 * @return number вернет 1, если указанный - это суббота или воскресенье.
+	 */
+	public static function isWeekend($date = 'now') {
+		return (date('N', strtotime($date)) > 6);
+	}
+
+	/**
+	 * Возвращает номер дня, где 0 - пн., 6 - вс.
+	 * @param string $date Дата.
+	 * @return number
+	 */
+	public static function getDayNumber($date) {
+		return empty(date("w",strtotime($date)))? 6 : date("w",strtotime($date))-1;
+	}
+
+	/**
+	 * Возвращает количество дней между $sdate и $edate.
+	 * @param string $sdate Дата начала.
+	 * @param string $edate Дата окончания.
+	 * @return int
+	 */
+	public static function diff($sdate, $edate) {
+		return (int) round((strtotime($edate) - strtotime($sdate)) / (3600 * 24));
 	}
 
 }

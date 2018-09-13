@@ -166,6 +166,8 @@ class Kohana_Valid {
 	 */
 	public static function url($url)
 	{
+		$matches = null;
+
 		// Based on http://www.apps.ietf.org/rfc/rfc1738.html#sec-5
 		if ( ! preg_match(
 			'~^
@@ -568,6 +570,159 @@ class Kohana_Valid {
 	 */
 	public static function phoneNumber(string $value, int $code, int $length) : bool {
 		return (bool)preg_match('/^\+'.$code.'[0-9]{'.($length - strlen($code) - 1).'}$/', $value);
+	}
+
+
+
+// TODO: Выполнить перевод документации на английский язык.
+
+
+	/**
+	 * Проверяет является ли значение простым числом или равным null.
+	 * @param string $value Проверяемое значение.
+	 * @return bool Признак того, что указанное значение - простое или null.
+	 */
+	public static function digit_or_null($value) {
+		return is_null($value) || self::digit($value);
+	}
+
+	/**
+	 * Проверяет является ли значение простым или вещественным числом, или равным null.
+	 * @param string $value Проверяемое значение.
+	 * @return bool Признак того, что указанное значение - простое, вещественное или null.
+	 */
+	public static function numeric_or_null($value) {
+		return is_null($value) || self::numeric(str_replace(array(',', '.'), localeconv()['decimal_point'], $value));
+	}
+
+	/**
+	 * Проверяет является ли значение датой или равным null.
+	 * @param string $value Проверяемое значение.
+	 * @return bool Признак того, что указанное значение - дата или null.
+	 */
+	public static function date_or_null($value) {
+		return is_null($value) || self::date($value);
+	}
+
+	/**
+	 * Проверяет является ли число меньше чем указанное значение. При этом происходит проверка является ли значение числом (Valid::digit).
+	 * @param string $value Число, которое необходимо проверить.
+	 * @param integer $number Значение с которым необходимо сравнить.
+	 * @param integer $step Инкремент (шаг) для проверки.
+	 * @return boolean Признак того, что число меньше указанного значения.
+	 */
+	public static function less_than($value, $number, $step = null) {
+		if(!$step)
+			$step = 1;
+		return (bool)(self::digit($value) && ($value < $number) && (($number - $value) % $step === 0));
+	}
+
+	/**
+	 * Проверяет является ли число больше чем указанное значение. При этом происходит проверка является ли значение числом (Valid::digit).
+	 * @param string $value Число, которое необходимо проверить.
+	 * @param integer $number Значение с которым необходимо сравнить.
+	 * @param integer $step Инкремент (шаг) для проверки.
+	 * @return boolean Признак того, что число больше указанного значения.
+	 */
+	public static function more_than($value, $number, $step = null) {
+		if(!$step)
+			$step = 1;
+		return (bool)(self::digit($value) && ($number < $value) && (($value - $number) % $step === 0));
+	}
+
+	/**
+	 * Проверяет является ли число больше 0. При этом происходит проверка является ли значение числом (Valid::digit).
+	 * @param string $value Число, которое необходимо проверить.
+	 * @return boolean Признак того, что число больше 0.
+	 */
+	public static function more_than_zero($value) {
+		return (bool)(self::digit($value) && (0 < (int)$value));
+	}
+
+	/**
+	 * Проверяет является ли число больше или равно 0. При этом происходит проверка является ли значение числом (Valid::digit).
+	 * @param string $value Число, которое необходимо проверить.
+	 * @return boolean Признак того, что число больше или равно 0.
+	 */
+	public static function more_than_zero_or_equal($value) {
+		return (bool)(self::digit($value) && (0 <= (int)$value));
+	}
+
+	/**
+	 * Проверяет является ли число больше 0 или NULL. При этом происходит проверка является ли значение числом (Valid::digit).
+	 * @param string $value Число, которое необходимо проверить.
+	 * @return boolean Признак того, что число больше 0.
+	 */
+	public static function more_than_zero_or_null($value) {
+		return (bool)(is_null($value) || (self::digit($value) && (0 < $value)));
+	}
+
+	/**
+	 * Проверяет является ли число равным 0 или 1.
+	 * @param int $value Значение, которое необходимо проверить на принадлежность 0 или 1.
+	 * @return boolean Признак того, что значение равно 0 или 1.
+	 */
+	public static function zero_or_one($value) {
+		return (bool)((self::digit($value) && ((int)$value === 0) || ((int)$value === 1)));
+	}
+
+	/**
+	 * Проверяет является ли число равным 0 или 1.
+	 * @param int $value Значение, которое необходимо проверить на принадлежность 0 или 1.
+	 * @return boolean Признак того, что значение равно 0 или 1.
+	 */
+	public static function null_zero_or_one($value) {
+		return (bool)(is_null($value) || (self::digit($value) && ((int)$value === 0) || ((int)$value === 1)));
+	}
+
+	/**
+	 * Проверяет является ли значение диапазоном времени в указанном формате.
+	 * @param string $value Проверяемое значение.
+	 * @param string $pattern Шаблон проверки.
+	 * @return boolean Признак того, что указанное значение является диапазоном времени в заданном формате.
+	 * @example Пример валидного значения: 8:00-11:25.
+	 */
+	public static function timeRange($value, $pattern = '/^([0-2]?[0-9]:[0-9][0-9]-[0-2]?[0-9]:[0-9][0-9])$/') {
+		return (bool)preg_match($pattern, $value);
+	}
+
+	/**
+	 * Проверяет является ли указанное значение временем в указанном формате.
+	 * @param string $value Проверяемое значение.
+	 * @param string $pattern Шаблон проверки.
+	 * @return boolean Признак того, что указанное значение является временем в заданном формате.
+	 * @example Пример валидного значения: 8:00.
+	 */
+	public static function isTime($value, $pattern = '/^([0-2]?[0-9]:[0-9][0-9])$/') {
+		return (bool)preg_match($pattern, $value);
+	}
+
+	/**
+	 * Проверяет строка пастая или указанной длины.
+	 * @param string $value Значение, которое необходимо проверить.
+	 * @param integer|array $length Длина строки или массив допустимых длин.
+	 * @return boolean
+	 */
+	public static function exact_length_or_null($value, $length) {
+		return (empty($value) || parent::exact_length($value, $length));
+	}
+
+	/**
+	 * Проверяет является ли значение числовым.
+	 * @param string $value
+	 * @return boolean
+	 */
+	public static function autocomplete($value) {
+		return self::digit($value);
+	}
+
+	/**
+	 * Проверяет является ли значение числовым или пустым.
+	 * @param string $value
+	 * @return boolean
+	 */
+	public static function autocomplete_or_null($value) {
+		return ($value == -1) || empty($value) || self::digit($value);
 	}
 
 }
