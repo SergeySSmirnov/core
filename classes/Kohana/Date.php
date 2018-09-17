@@ -682,8 +682,20 @@ class Kohana_Date {
 	 * @param string $format Формат представления даты. Значение по умолчанию: 'Y-m-d H:i:s'.
 	 * @return string
 	 */
-	public static function asDBtimeOrNULL($date = NULL, $format = NULL) {
+	public static function asDBtimeOrNull($date = NULL, $format = NULL) {
 		return empty($date) ? NULL : self::formatted_time($date, (empty($format) ? 'Y-m-d H:i:s' : $format));
+	}
+
+	/**
+	 * Возвращает представление даты и времени (первоначально заданное в формате Unix) для использования в запросах к БД в соответствии с заданным форматом.
+	 * @param int $date Дата, которую необходимо представить в текстовом виде.
+	 * @param string $format Формат представления даты. Значение по умолчанию: 'Y-m-d H:i:s'.
+	 * @param int $default Значение по умолчанию, которое будет возвращено в том случае, если значение даты отсутствует или равно null. Допустимо использовать значение 'now'.
+	 * @return string
+	 */
+	public static function asDBtimeFromUnixTimeStamp($date, $format = null, int $default = 0) {
+		$date = ($date == 0) ? $default : $date;
+		return date((empty($format) ? 'Y-m-d H:i:s' : $format), $date);
 	}
 
 	/**
@@ -712,6 +724,43 @@ class Kohana_Date {
 	 */
 	public static function diff($sdate, $edate) {
 		return (int) round((strtotime($edate) - strtotime($sdate)) / (3600 * 24));
+	}
+
+	/**
+	 * При необходимости добавляет недостающие нули и первые две цифры в дате.
+	 * @param string $date
+	 * @return string
+	 */
+	public static function completeDate(string $date) : string {
+		if (strpos($date, '.')) {
+			$_tText = explode('.', $date);
+			if (isset($_tText[0]) && (strlen($_tText[0]) == 1))
+				$_tText[0] = '0'.$_tText[0];
+			if (isset($_tText[1]) && (strlen($_tText[1]) == 1))
+				$_tText[1] = '0'.$_tText[1];
+			if (isset($_tText[2]) && (strlen($_tText[2]) == 2))
+				$_tText[2] = '20'.$_tText[2];
+			return implode('.', $_tText);
+		} else if (strpos($date, '-')) {
+			$_tText = explode('-', $date);
+			if (isset($_tText[0]) && (strlen($_tText[0]) == 1))
+				$_tText[0] = '0'.$_tText[0];
+			if (isset($_tText[1]) && (strlen($_tText[1]) == 1))
+				$_tText[1] = '0'.$_tText[1];
+			if (isset($_tText[2]) && (strlen($_tText[2]) == 2))
+				$_tText[2] = '20'.$_tText[2];
+			return implode('-', $_tText);
+		} else if (strpos($date, '/')) {
+			$_tText = explode('/', $date);
+			if (isset($_tText[0]) && (strlen($_tText[0]) == 2))
+				$_tText[0] = '20'.$_tText[0];
+			if (isset($_tText[1]) && (strlen($_tText[1]) == 1))
+				$_tText[1] = '0'.$_tText[1];
+			if (isset($_tText[2]) && (strlen($_tText[2]) == 1))
+				$_tText[2] = '0'.$_tText[2];
+			return implode('/', $_tText);
+		} else
+			return $date;
 	}
 
 }
