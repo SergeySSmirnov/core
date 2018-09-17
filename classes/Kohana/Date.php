@@ -611,7 +611,7 @@ class Kohana_Date {
 	 * @param string $default Значение по умолчанию, которое будет возвращено в том случае, если значение даты отсутствует или равно NULL. Допустимо использовать значение 'now'.
 	 * @return string
 	 */
-	public static function asNorm($date = NULL, $format = NULL, $default = NULL) {
+	public static function asNormDate($date = NULL, $format = NULL, $default = NULL) {
 		if (empty($date) && empty($default))
 			return '';
 		$date = empty($date) ? $default : $date;
