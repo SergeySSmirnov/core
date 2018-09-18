@@ -12,16 +12,19 @@ class Kohana_File {
 
 	/**
 	 * @var bool Allow GZIP compression.
+	 * Default value: true.
 	 */
 	public static $allowedGZIP = true;
 
 	/**
 	 * @var bool Allow minify CSS.
+	 * Default value: true.
 	 */
 	public static $allowMinifyCSS = true;
 
 	/**
 	 * @var bool Allow minify JS.
+	 * Default value: true.
 	 */
 	public static $allowMinifyJS = true;
 
