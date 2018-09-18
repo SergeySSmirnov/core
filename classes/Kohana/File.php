@@ -11,6 +11,22 @@
 class Kohana_File {
 
 	/**
+	 * @var bool Allow GZIP compression.
+	 */
+	public static $allowedGZIP = true;
+
+	/**
+	 * @var bool Allow minify CSS.
+	 */
+	public static $allowMinifyCSS = true;
+
+	/**
+	 * @var bool Allow minify JS.
+	 */
+	public static $allowMinifyJS = true;
+
+
+	/**
 	 * Attempt to get the mime type from a file. This method is horribly
 	 * unreliable, due to PHP being horribly unreliable when it comes to
 	 * determining the mime type of a file.
@@ -236,6 +252,104 @@ class Kohana_File {
 		}
 
 		return $pieces;
+	}
+
+	/**
+	 * Minify the CSS files passed in the parameter to a single file. External files are not minified. The path to the minifyed is: /media/css/auto/{md5_filename}.css.
+	 * @param array $files The list of files to be minified.
+	 * @return array List of minifyed files.
+	 */
+	public static function minifyCSS(array $files) {
+		if (!self::$allowMinifyCSS)
+			return $files;
+		$_cssResult = []; // Результирующий массив CSS-стилей
+		$_cssLocals = []; // Локальные CSS-стили, на основе которых будет сгенерирован единственный файл
+		$_md5FName = ''; // MD5 сумма названий файлов
+		foreach ($files as $_key => $_val) { // Пробегаемся по всем CSS-стилям
+			if (Text::startsWith($_key, 'http') || Text::startsWith($_key, '//')) { // Если это внешний CSS-стиль, то пропускаем его
+				$_cssResult[$_key] = $_val;
+				continue;
+			}
+			$_fileName = DOCROOT.((substr($_key, 0, 1) === DIRECTORY_SEPARATOR) ? substr($_key, 1) : $_key); // Формируем имя файла
+			if (file_exists($_fileName)) { // Если файл существует, то добавляем его в список локальных для объединения
+				$_cssLocals[] = $_fileName;
+				$_md5FName .= $_key.filemtime($_fileName);
+			}
+		}
+		$_md5FName = (self::$allowedGZIP ? 'gz' : '').md5($_md5FName).'.css'; // Имя конечного файла
+		$_filePath = DOCROOT.'media/css/auto/';
+		$_md5FileName = $_filePath.$_md5FName; // Формируем результирующее имя CSS-файла
+		if (!file_exists($_md5FileName)) { // Если объединённый файл не существует, то формируем его
+			if (!file_exists($_filePath)) // Если каталога не существует, то создаём его
+				mkdir($_filePath, 0770, true);
+			$_cssFile = self::$allowedGZIP ? gzopen($_md5FileName, 'wb9') : fopen($_md5FileName, 'w'); // Создаем новый файл
+			foreach ($_cssLocals as $_val) { // Пробегаемся по всем локальным файлам
+				$_fContent = file_get_contents($_val);
+				$_fContent = preg_replace("/\/\*[\d\D]*?\*\/|\t+/", " ", $_fContent); // Удаляем кооменты
+				$_fContent = str_replace(["\n", "\r", "\t"], " ", $_fContent); // Заменяем CR, LF и TAB на пробелы
+				$_fContent = preg_replace("/\s\s+/", " ", $_fContent); // Заменяем множественные пробелы на одиночные
+				$_fContent = preg_replace("/\s*({|}|\[|\]|=|~|\+|>|\||;|:|,)\s*/", "$1", $_fContent); // Удаляем ненужные пробелы
+				$_fContent = str_replace(";}", "}", $_fContent); // Удаляем точку запятой в последней строке правила
+				$_fContent = trim($_fContent);
+				if (self::$allowedGZIP)
+					gzwrite($_cssFile, $_fContent);
+				else
+					fwrite($_cssFile, $_fContent);
+			}
+			if (self::$allowedGZIP)
+				gzclose($_cssFile);
+			else
+				fclose($_cssFile);
+		}
+		$_cssResult['/media/css/'.(self::$allowedGZIP ? '' : 'auto/').$_md5FName] = ''; // Завершаем формирование результирующего списка
+		return $_cssResult;
+	}
+
+	/**
+	 * Minify the JS files passed in the parameter to a single file. External files are not minified. The path to the minifyed is: /media/js/auto/{md5_filename}.js.
+	 * @param array $files The list of files to be minified.
+	 * @return array List of minifyed files.
+	 */
+	public static function minifyJS(array $files) {
+		if (!self::$allowMinifyJS)
+			return $files;
+		$_jsResult = []; // Результирующий массив JS-скриптов
+		$_jsLocals = []; // Локальные JS-скрипты, на основе которых будет сгенерирован единственный файл
+		$_md5FName = ''; // MD5 сумма названий файлов
+		foreach ($files as $_val) { // Пробегаемся по всем JS-файлам
+			if (Text::startsWith($_val, 'http') || Text::startsWith($_val, '//') || Text::endsWith($_val, '.min.js')) { // Если это внешний или минифицированный JS-скрипт, то пропускаем его
+				$_jsResult[] = $_val;
+				continue;
+			}
+			$_fileName = DOCROOT.((substr($_val, 0, 1) === DIRECTORY_SEPARATOR) ? substr($_val, 1) : $_val); // Формируем имя файла
+			if (file_exists($_fileName)) { // Если файл существует, то добавляем его в список локальных для объединения
+				$_jsLocals[] = $_fileName;
+				$_md5FName .= $_val.filemtime($_fileName);
+			}
+		}
+		$_md5FName = (self::$allowedGZIP ? 'gz' : '').md5($_md5FName).'.js'; // Имя конечного файла
+		$_filePath = DOCROOT.'media/js/auto/';
+		$_md5FileName = $_filePath.$_md5FName; // Формируем результирующее имя JS-файла
+		if (!file_exists($_md5FileName)) { // Если объединённый файл не существует, то формируем его
+			if (!file_exists($_filePath)) // Если каталога не существует, то создаём его
+				mkdir($_filePath, 0770, true);
+			require_once SYSPATH.'vendors/JavaScriptPacker.php';
+			$_jsFile = self::$allowedGZIP ? gzopen($_md5FileName, 'wb9') : fopen($_md5FileName, 'w'); // Создаем новый файл
+			foreach ($_jsLocals as $_val) { // Пробегаемся по всем локальным файлам
+				$_fContent = file_get_contents($_val);
+				$packer = new JavaScriptPacker($_fContent, 'None', true, false);
+				if (self::$allowedGZIP)
+					gzwrite($_jsFile, $packer->pack());
+				else
+					fwrite($_jsFile, $packer->pack());
+			}
+			if (self::$allowedGZIP)
+				gzclose($_jsFile);
+			else
+				fclose($_jsFile);
+		}
+		$_jsResult[] = '/media/js/'.(self::$allowedGZIP ? '' : 'auto/').$_md5FName; // Завершаем формирование результирующего списка
+		return $_jsResult;
 	}
 
 }
