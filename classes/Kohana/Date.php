@@ -605,6 +605,20 @@ class Kohana_Date {
 
 
 	/**
+	 * Возвращает полное представление даты в соответствии с заданным форматом.
+	 * @param string $date Дата, которую необходимо представить в текстовом виде. Допустимо использовать значение 'now'.
+	 * @param string $format Формат представления даты. Значение по умолчанию: 'Y-m-d\TH:iP'.
+	 * @param string $default Значение по умолчанию, которое будет возвращено в том случае, если значение даты отсутствует или равно NULL. Допустимо использовать значение 'now'.
+	 * @return string
+	 */
+	public static function asFull($date = NULL, $format = 'Y-m-d\TH:iP', $default = NULL) {
+		if (empty($date) && empty($default))
+			return '';
+		$date = empty($date) ? $default : $date;
+		return self::formatted_time($date, $format);
+	}
+
+	/**
 	 * Возвращает привычное представление даты в соответствии с заданным форматом.
 	 * @param string $date Дата, которую необходимо представить в текстовом виде. Допустимо использовать значение 'now'.
 	 * @param string $format Формат представления даты. Значение по умолчанию: 'd.m.Y'.
