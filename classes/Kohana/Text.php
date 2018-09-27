@@ -825,6 +825,7 @@ class Kohana_Text {
 	 * @return string
 	 */
 	public static function pluralNumberText($number, $after) : string {
+		$number = abs($number);
 		$_cases = array (2, 0, 1, 1, 1, 2);
 		return $after[($number%100>4 && $number%100<20)? 2: $_cases[min($number%10, 5)]];
 	}
