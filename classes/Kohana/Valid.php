@@ -224,13 +224,11 @@ class Kohana_Valid {
 	 *
 	 * @param   string  $ip             IP address
 	 * @param   boolean $allow_private  allow private IP networks
+	 * @param	int		$flags			Flags for filter_vars function. Default value: FILTER_FLAG_NO_RES_RANGE.
 	 * @return  boolean
 	 */
-	public static function ip($ip, $allow_private = TRUE)
+	public static function ip($ip, $allow_private = TRUE, $flags = FILTER_FLAG_NO_RES_RANGE)
 	{
-		// Do not allow reserved addresses
-		$flags = FILTER_FLAG_NO_RES_RANGE;
-
 		if ($allow_private === FALSE)
 		{
 			// Do not allow private or reserved addresses
