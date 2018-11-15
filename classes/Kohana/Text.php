@@ -704,6 +704,15 @@ class Kohana_Text {
 	}
 
 	/**
+	 * Returns NULL if the string is not specified or equals -1, otherwise it returns the string itself without leading and trailing whitespace.
+	 * @param string $value Строка, которую нужно проверить.
+	 * @return string|null Вернет null если строка не задана, в противном случае вернет саму строку без начальных и конечных пробелов.
+	 */
+	public static function checkNullOrTrim_1($value) {
+		return (($value == -1) || empty($value)) ? null : (is_string($value) ? trim($value) : $value);
+	}
+
+	/**
 	 * The function makes the first letter is upper of the line.
 	 * @param string $value The string to edit.
 	 * @param string $encoding The string encoding.
@@ -816,6 +825,7 @@ class Kohana_Text {
 	 * @return string
 	 */
 	public static function pluralNumberText($number, $after) : string {
+		$number = abs($number);
 		$_cases = array (2, 0, 1, 1, 1, 2);
 		return $after[($number%100>4 && $number%100<20)? 2: $_cases[min($number%10, 5)]];
 	}
