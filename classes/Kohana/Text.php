@@ -839,7 +839,7 @@ class Kohana_Text {
 		$_ratingMess = '';
 		for ($_i = 0; $_i < $rating; $_i++)
 			$_ratingMess .= hex2bin('e2ad90');
-		if ($rating % 10 > 7)
+		if (abs(fmod(round($rating,1),1))*10 >= 7)
 			$_ratingMess .= hex2bin('e2ad90');
 		return $_ratingMess;
 	}
