@@ -33,7 +33,7 @@
 	"require" : {
 		"php" : ">=5.3.3",
 		"composer/installers" : "~1.0",
-		"oomphinc/composer-installers-extender" : "1.1.*",
+		"oomphinc/composer-installers-extender" : "1.1.*"
 	},
 	"require-dev" : {
 		"kohana/unittest" : "3.3.*@dev",
