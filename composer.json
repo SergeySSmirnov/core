@@ -1,13 +1,13 @@
 {
 	"_readme" : "NOTE: see readme for COMPOSER_ROOT_VERSION instructions if you have dependency issues",
 	"name" : "kohana/core",
-	"type" : "framework",
+	"type" : "framework_core",
 	"description" : "Core system classes for the Kohana application framework",
 	"homepage" : "http://kohanaframework.org",
 	"license" : "BSD-3-Clause",
 	"keywords" : [
 		"kohana",
-		"framework_core"
+		"framework"
 	],
 	"authors" : [{
 			"name" : "Sergei Smirnov",
