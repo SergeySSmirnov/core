@@ -1,43 +1,57 @@
 {
-    "_readme":     "NOTE: see readme for COMPOSER_ROOT_VERSION instructions if you have dependency issues",
-	"name":        "kohana/core",
-	"description": "Core system classes for the Kohana application framework",
-	"homepage":    "http://kohanaframework.org",
-	"license":     "BSD-3-Clause",
-	"keywords":    ["kohana", "framework"],
-	"authors": [
-		{
-			"name":     "Kohana Team",
-			"email":    "team@kohanaframework.org",
-			"homepage": "http://kohanaframework.org/team",
-			"role":     "developer"
+	"_readme" : "NOTE: see readme for COMPOSER_ROOT_VERSION instructions if you have dependency issues",
+	"name" : "kohana/core",
+	"description" : "Core system classes for the Kohana application framework",
+	"homepage" : "http://kohanaframework.org",
+	"license" : "BSD-3-Clause",
+	"keywords" : [
+		"kohana",
+		"framework"
+	],
+	"authors" : [{
+			"name" : "Sergei Smirnov",
+			"email" : "sergeissmirnov@mail.ru",
+			"role" : "developer"
+		}, {
+			"name" : "Koseven Team",
+			"homepage" : "https://koseven.ga/",
+			"role" : "developer"
+		}, {
+			"name" : "Kohana Team",
+			"email" : "team@kohanaframework.org",
+			"homepage" : "http://kohanaframework.org/team",
+			"role" : "developer"
 		}
 	],
-	"support": {
-		"issues":   "http://dev.kohanaframework.org",
-		"forum":    "http://forum.kohanaframework.org",
-		"irc":      "irc://irc.freenode.net/kohana",
-		"source":   "http://github.com/kohana/core"
+	"support" : {
+		"issues" : "http://dev.kohanaframework.org",
+		"forum" : "http://forum.kohanaframework.org",
+		"irc" : "irc://irc.freenode.net/kohana",
+		"source" : "http://github.com/kohana/core"
 	},
-	"require": {
-		"php":        ">=5.3.3"
+	"require" : {
+		"php" : ">=5.3.3",
+		"composer/installers" : "~1.0"
 	},
-	"require-dev": {
-		"kohana/unittest":     "3.3.*@dev",
-		"kohana/koharness":    "*@dev"
+	"require-dev" : {
+		"kohana/unittest" : "3.3.*@dev",
+		"kohana/koharness" : "*@dev"
 	},
-	"suggest": {
-		"ext-http":   "*",
-		"ext-curl":   "*",
-		"ext-mcrypt": "*"
+	"suggest" : {
+		"ext-http" : "*",
+		"ext-curl" : "*",
+		"ext-mcrypt" : "*"
 	},
-	"extra": {
-		"installer-paths": {
-			"vendor/{$vendor}/{$name}": ["type:kohana-module"]
+	"extra" : {
+		"installer-name" : "defender",
+		"installer-paths" : {
+			"vendor/{$vendor}/{$name}" : [
+				"type:kohana-module"
+			]
 		},
-		"branch-alias": {
-			"dev-3.3/develop":  "3.3.x-dev",
-			"dev-3.4/develop":  "3.4.x-dev"
+		"branch-alias" : {
+			"dev-3.3/develop" : "3.3.x-dev",
+			"dev-3.4/develop" : "3.4.x-dev"
 		}
 	}
 }
